@@ -3,17 +3,15 @@ import matplotlib.pyplot as plt
 import math
 
 def create_dataset(m=2, b=3):
-    #x = np.random.uniform(-2, 2, 500)
-    x = np.linspace(-2,2,500)
+    x = np.random.uniform(-2, 2, 500)
     y = m*x + b
     data = np.c_[x,y]
-    np.random.shuffle(data)
     return data
     
 def train(data):
     weight = 5
     bias = 3
-    learning_rate = 0.01
+    learning_rate = 0.1
     weights = []
     biases = []
     
