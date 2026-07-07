@@ -1,0 +1,119 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+class myClass:
+    def __init__(self, name):
+        self.Name = name
+
+    def describe(self):
+        print("Hi, I am ",self.Name)
+
+class Layer:
+    def __init__(self, input_size, output_size, a_fun="ReLU"):
+        self.inp = input_size
+        self.out = output_size
+        self.matrix = np.random.randn(input_size, output_size)
+        self.bias = np.random.randn(output_size)
+        self.act_f = a_fun
+
+    def feed_forward(self, input):
+        z = np.dot(input, self.matrix) + self.bias
+        y_pred = self.act(z)
+        return y_pred
+
+    def act(self, arr):
+        if(self.act_f == "ReLU"):
+            return np.maximum(0, arr)
+
+    def describe(self):
+        print("Dim : ", self.inp, " x ", self.out)
+        print('Weights: ',self.matrix)
+        print('biases: ',self.bias)
+        print('activation function: ',self.act_f)
+
+
+class MyANN:
+    def __init__(self):
+        self.layers = []
+
+    def add_layer(self, in_dim, out_dim, act_fun="ReLU"):
+        self.layers.append(Layer(in_dim, out_dim, act_fun))
+
+    def predict(self, inp):
+        result = inp
+        for layer in self.layers:
+            result = layer.feed_forward(result)
+
+        return result
+
+    def fit(self, inp, out):
+        
+    
+    def describe(self):
+        for i in range (len(self.layers)):
+            print("LAYER : ",i)
+            self.layers[i].describe()
+    
+    def plot(self,X): 
+        Y = X+1
+        for i in range(len(Y)):
+            Y[i] = self.predict([X[i]])[0]
+
+        print(Y)
+        return Y
+
+ann = MyANN()
+ann.add_layer(1,1)
+#ann.describe()
+
+input = np.linspace(-20,20,50)
+output = np.maximum(0, input+5)
+
+
+ann.fit(input, output)
+
+
+pred = ann.plot(input)
+
+plt.plot(input, output)
+plt.plot(input, pred)
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

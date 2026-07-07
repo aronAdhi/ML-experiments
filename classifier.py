@@ -2,12 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 
-def e(x):
-    return math.exp(x)
-
-def sig(x):
-    return 1/(1+e(-x))
-
 #create data
 student_id = np.array([1,2,3,4])
 sleep = np.array([0.1,0.3,0.7,0.8])
@@ -23,13 +17,22 @@ epochs = 2000
 lr = 0.1
 Loss = []
 
+def e(x):
+    return math.exp(x)
+
+def sig(x):
+    return 1/(1+e(-x))
+    
+def guess(sleep, study):
+        return weight_1*sleep + weight_2*study + bias
+
 for _ in range(epochs):
     for d in data:
         sleep = d[1]
         study = d[2]
         result = d[3]
         
-        z = weight_1*sleep + weight_2*study + bias
+        z = guess(sleep, study)
         d_w1 = sleep 
         d_w2 = study
         d_b = 1
@@ -43,5 +46,5 @@ for _ in range(epochs):
         bias -= (y_pred - result) * sig(z)*(1-sig(z)) * d_b*lr
         
         
-plt.plot(Loss)
-plt.show()
+
+print(sig(guess(0.5,0.3)))

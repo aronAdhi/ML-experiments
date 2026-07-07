@@ -1,0 +1,112 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import random
+
+class Neuron:
+    def __init__(self, weight, bias, act):
+        self.weight = weight
+        self.bias = bias
+        self.act = act
+        self.last_slp = None
+        self.inp = None
+        self.lr = 0.01
+
+    def update(self, wt):
+        cur_wt = self.weight
+        self.weight -= wt * self.last_slp * self.inp * lr
+        self.bias -= wt * self.last_slp * lr
+        return cur_wt * wt * self.last_slp
+
+    def pass_fn(self, inp):
+        self.inp = inp
+        z = inp * self.weight + self.bias
+        self.act_fun_slp(z)
+        return self.act_fun(z)
+
+    def pass_fn_slp(self, inp):
+        z = inp * self.weight + self.bias
+        return self.act_fun_slp(z)
+
+    def act_fun_slp(self, inp):
+        if(self.act == "ReLU"):
+            self.last_slp = np.where(inp > 0,1.0, 0.0)
+            return self.last_slp
+        if(self.act == "Lin"):
+            self.last_slp = np.ones_like(inp)
+            return self.last_slp
+
+    def act_fun(self, inp):
+        if(self.act == "ReLU"):
+            return np.maximum(0, inp)
+        if(self.act == "Lin"):
+            return inp
+
+class ner_network:
+    def __init__(self):
+        self.neurons = []
+    
+    def add_nur(self, weight, bias, act='ReLU'):
+        self.neurons.append(Neuron(weight,bias,act))
+
+    def forward(self, inp):
+        ans = inp
+        for neuron in self.neurons:
+            ans = neuron.pass_fn(ans)
+        return ans
+
+    def train(self, inp, out):
+        ans = inp
+        for neuron in self.neurons:
+            ans = neuron.pass_fn(ans)
+        weight = out - ans
+        for neuron in reversed(self.neurons):
+            weight = neuron.update(weight)
+
+
+
+#n1 = Neuron(2,1,'ReLU')
+#n2 = Neuron(2,1,'Lin')
+nn = ner_network();
+nn.add_nur(2,2)
+nn.add_nur(2,2)
+nn.add_nur(1,0)
+lr = 0.01
+X = np.linspace(-2,2,31)
+Y = np.maximum(0,X)
+y_pred = X
+
+fig, ax = plt.subplots()
+plt.ion()
+
+for i in range(500):
+    """h = n1.pass_fn(X)
+    y_pred = n2.pass_fn(h)
+
+    E = (y_pred - Y)
+    R_diff2 = n2.pass_fn_slp(h)
+    R_diff1 = n1.pass_fn_slp(X)
+    
+    dW2 = E * R_diff2 * h
+    dB2 = E * R_diff2 
+    dW1 = E * R_diff2 * n2.weight * R_diff1 * X
+    dB1 = E * R_diff2 * n2.weight * R_diff1
+
+    n2.weight -= np.mean(dW2) * lr
+    n2.bias -= np.mean(dB2) * lr
+    n1.weight -= np.mean(dW1) * lr
+    n1.bias -= np.mean(dB1)* lr"""
+
+    nn.train(X,Y)
+    y_pred = nn.forward(X)
+
+    ax.clear()
+    #ax.set_ylim(-1, 6)
+    ax.set_title(f"epoach: {i}")
+    ax.plot(X, y_pred)
+    ax.plot(X, Y)
+    plt.pause(.1)
+
+
+
+plt.ioff()
+plt.show()
