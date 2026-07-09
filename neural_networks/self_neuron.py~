@@ -31,42 +31,61 @@ class Neuron:
         self.bias -= np.mean(blame * self.act_slp * self.lr)
 
 
-n1 = Neuron(3,4,'Lin',0.05)
-n2 = Neuron(3,4,'Lin',0.05)
+class N_Network:
+    def __init__(self):
+        self.layers = []
+
+    def add_layer(self, n):
+        self.layers.append(n)
+
+    def forward(self, inp):
+        out = inp
+        for layer in self.layers:
+            out = layer.pass_fn(out)
+        return out
+    
+    def back_prop(self, inp, out):
+        temp = inp
+        for layer in self.layers:
+            temp = layer.pass_fn(temp)
+        blame = temp - out
+        for layer in reversed(self.layers):
+            #nxt_blm = blame * layer.act_slp * layer.weight
+            nxt_blm = blame
+            layer.back_prop(blame)
+            blame = nxt_blm
+        return temp
+        
 
 X = np.linspace(-2,2,30)
-Y = 2*X + 3
+Y = 2*X + 6
 
 
 weights = []
 biases = []
+error = []
+
 epochs = 500
-fig, (ax,wt,bi) = plt.subplots(1,3,figsize=(15,5))
+fig, (ax,e,bi) = plt.subplots(1,3,figsize=(15,5))
 plt.ion()
 
-for epoch in range(epochs):
-    h = n1.pass_fn(X)
-    y_pred = n2.pass_fn(h)
-    weights.append(n1.weight)
-    biases.append(n1.bias)
-    e = y_pred - Y
-    n2.back_prop(e)
-    n1.back_prop(e*n2.act_slp*n2.weight)
+nn = N_Network()
+nn.add_layer(Neuron(1,2))
 
+for epoch in range(epochs):
+    y_pred = nn.back_prop(X,Y)
+    er = np.mean(y_pred - Y)
+    error.append(er)
 
     ax.clear()
     ax.plot(X, Y)
     ax.plot(X, y_pred)
     ax.set_title(f"epoch: {epoch}")
 
-    wt.clear()
-    wt.plot(weights)
+    e.clear()
+    e.plot(error)
 
-    bi.clear()
-    bi.plot(biases)
-    #print(weights)
-
-    plt.pause(.1)
+    plt.pause(.001)
 
 plt.ioff()
 plt.show()
