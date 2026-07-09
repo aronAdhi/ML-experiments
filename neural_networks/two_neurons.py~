@@ -15,7 +15,7 @@ class Neuron:
         cur_wt = self.weight
         self.weight -= wt * self.last_slp * self.inp * lr
         self.bias -= wt * self.last_slp * lr
-        return cur_wt
+        return cur_wt * wt * self.last_slp
 
     def pass_fn(self, inp):
         self.inp = inp

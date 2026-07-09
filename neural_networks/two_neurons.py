@@ -79,7 +79,7 @@ fig, ax = plt.subplots()
 plt.ion()
 
 for i in range(500):
-    """h = n1.pass_fn(X)
+    h = n1.pass_fn(X)
     y_pred = n2.pass_fn(h)
 
     E = (y_pred - Y)
@@ -94,7 +94,7 @@ for i in range(500):
     n2.weight -= np.mean(dW2) * lr
     n2.bias -= np.mean(dB2) * lr
     n1.weight -= np.mean(dW1) * lr
-    n1.bias -= np.mean(dB1)* lr"""
+    n1.bias -= np.mean(dB1)* lr
 
     nn.train(X,Y)
     y_pred = nn.forward(X)
