@@ -1,0 +1,81 @@
+import torch
+import numpy as np
+import matplotlib.pyplot as plt
+
+class Nuron:
+    def __init__(self,inp=1,out=1,lr=0.001,act='ReLU'):
+        self.W = torch.randn(inp,out, requires_grad=True)
+        self.B = torch.randn(out, requires_grad=True)
+        self.lr = lr
+        self.act = act
+
+    def pass_fn(self, inp):
+        z = torch.matmul(inp, self.W) + self.B
+        y = self.act_fn(z)
+        return y
+
+    def act_fn(self, inp):
+        if(self.act == 'ReLU'):
+            out = torch.relu(inp)
+            return out
+        if(self.act == 'Lin'):
+            out = inp
+            return out
+
+    def back_prop(self):
+    
+        with torch.no_grad():
+            self.W -= self.W.grad*self.lr
+            self.B -= self.B.grad*self.lr
+
+        self.W.grad.zero_()
+        self.B.grad.zero_()
+
+class nn:
+    def __init__(self):
+        self.layers = []
+
+    def add_layers(self, neuron):
+        self.layers.append(neuron)
+
+    def pass_fn(self, inp):
+        temp = inp
+        for layer in self.layers:
+            temp = layer.pass_fn(temp)
+        return temp
+    
+    def back_prop(self, inp, out):
+        y_pred = self.pass_fn(inp)
+        L = ((y_pred - out)**2).mean()
+        L.backward()
+
+        for layer in reversed(self.layers):
+            layer.back_prop()
+
+        return y_pred
+
+X = torch.linspace(-2,2,100).reshape(-1,1)
+Y = torch.sin(X)
+
+NN = nn()
+NN.add_layers(Nuron(1,20))
+NN.add_layers(Nuron(20,20))
+NN.add_layers(Nuron(20,20))
+NN.add_layers(Nuron(20,1,act='Lin'))
+
+epochs = 1000
+fig,ax = plt.subplots()
+plt.ion()
+
+for epoch in range(epochs):
+    ax.clear()
+    y_pred = NN.back_prop(X,Y)
+
+    #ax.set_ylim(-20,30)
+    ax.plot(X,Y)
+    ax.set_title(f'Title: {epoch}')
+    ax.plot(X,y_pred.detach().numpy())
+    plt.pause(.1)
+
+plt.ioff()
+plt.show()
